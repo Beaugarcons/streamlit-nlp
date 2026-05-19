@@ -1,0 +1,12 @@
+streamlit
+transformers==4.36.2
+torch
+sentencepiece
+nltk
+deep-translator
+spacy
+pandas
+numpy
+matplotlib
+plotly
+pyvis
