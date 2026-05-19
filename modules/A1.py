@@ -85,12 +85,7 @@ def run():
         # 加载Jieba词典用于最大匹配算法
         jieba_dict = set()
         try:
-            # 尝试获取Jieba的词典
-            freq = {}
-            with open(jieba.get_dict_file(), 'r', encoding='utf-8') as f:
-                for line in f:
-                    word, freq_str = line.strip().split(' ')
-                    jieba_dict.add(word)
+            jieba_dict = set(jieba.dt.FREQ.keys())
         except:
             # 如果无法获取词典，使用一个简单的词典
             jieba_dict = {
