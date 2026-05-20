@@ -18,10 +18,9 @@ def run():
     @st.cache_resource
     def load_nmt():
         try:
-            # 修改 task 为更具体的 'translation_en_to_zh'
-            # 或者如果你只是做翻译，可以使用 'text2text-generation'
+            # 删掉 task 参数，直接传入 model
+            # transformers 会根据模型仓库信息自动识别任务
             translator = pipeline(
-                task="translation_en_to_zh", 
                 model="Helsinki-NLP/opus-mt-en-zh"
             )
             return translator
