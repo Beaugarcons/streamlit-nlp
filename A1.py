@@ -3,7 +3,6 @@ import jieba
 import jieba.posseg as pseg
 from collections import Counter
 import pandas as pd
-import matplotlib.pyplot as plt
 import re
 import unicodedata
 from opencc import OpenCC
@@ -12,17 +11,11 @@ from typing import List, Tuple, Dict, Any
 import pypinyin
 from pypinyin import Style, lazy_pinyin, pinyin, load_phrases_dict
 import warnings
-import matplotlib
+import plotly.express as px  # 引入 Plotly 替代 matplotlib
 
 def run():
 
     warnings.filterwarnings('ignore')
-
-    # 设置中文字体，优先尝试系统中已有的中文字体
-    matplotlib.rcParams['font.sans-serif'] = ['WenQuanYi Zen Hei', 'SimHei', 'Microsoft YaHei', 'DejaVu Sans']
-    matplotlib.rcParams['axes.unicode_minus'] = False
-
-    # 设置页面配置
 
     # 加载繁简体转换器
     t2s = OpenCC('t2s') # 繁转简
@@ -510,35 +503,29 @@ def run():
                         # 显示对比表格
                         st.dataframe(comparison_df.set_index('词性'), use_container_width=True)
 
-                        # 创建堆叠柱状图
-                        fig, ax = plt.subplots(figsize=(10, 6))
-
-                        # 准备数据
-                        methods = selected_methods
-                        pos_categories = comparison_df['词性'].tolist()
-
-                        # 颜色映射
+                        # 🛠️ 替换原本的 plt 堆叠柱状图，改用 Plotly
+                        # 1. 将宽表格转换为 Plotly 识别的长表格 (Melt)
+                        melted_df = comparison_df.melt(id_vars=['词性'], var_name='分词方法', value_name='数量')
+                        
+                        # 2. 颜色映射表
                         pos_color_map = {
                             '名词': '#FF6B6B', '动词': '#4ECDC4', '形容词': '#45B7D1',
                             '副词': '#96CEB4', '介词': '#FFEAA7', '连词': '#DDA0DD',
                             '助词': '#98D8C8', '代词': '#F7DC6F', '数词': '#BB8FCE',
                             '量词': '#85C1E9', '其他': '#CCCCCC'
                         }
-
-                        # 为每个词性类别创建堆叠
-                        bottom = np.zeros(len(methods))
-                        for i, pos in enumerate(pos_categories):
-                            values = [comparison_df.iloc[i][method] for method in methods]
-                            color = pos_color_map.get(pos, '#CCCCCC')
-                            ax.bar(methods, values, bottom=bottom, label=pos, color=color)
-                            bottom += values
-
-                        ax.set_ylabel('词性数量')
-                        ax.set_title('不同分词方法的词性分布对比')
-                        ax.legend(title='词性', bbox_to_anchor=(1.05, 1), loc='upper left')
-                        plt.xticks(rotation=45)
-                        plt.tight_layout()
-                        st.pyplot(fig)
+                        
+                        # 3. 绘制堆叠图
+                        fig_stacked = px.bar(
+                            melted_df, 
+                            x='分词方法', 
+                            y='数量', 
+                            color='词性', 
+                            title='不同分词方法的词性分布对比',
+                            color_discrete_map=pos_color_map
+                        )
+                        fig_stacked.update_layout(xaxis_tickangle=-45, height=500)
+                        st.plotly_chart(fig_stacked, use_container_width=True)
                     else:
                         st.info("请选择至少两种分词方法进行对比")
 
@@ -597,13 +584,22 @@ def run():
                     col_chart, col_table = st.columns([2, 1])
 
                     with col_chart:
-                        fig, ax = plt.subplots()
-                        words = [w[0] for w in top_words]
-                        freqs = [w[1] for w in top_words]
-                        bars = ax.barh(words, freqs, color='skyblue')
-                        ax.set_xlabel('频次')
-                        ax.invert_yaxis()  # 最高的在顶部
-                        st.pyplot(fig)
+                        # 🛠️ 替换原本的 plt 条形图，改用 Plotly
+                        fig_bar = px.bar(
+                            freq_df, 
+                            x='频次', 
+                            y='词语', 
+                            orientation='h', 
+                            title='Top 10 高频词',
+                            color_discrete_sequence=['#85C1E9']
+                        )
+                        # 让频次最高的词在顶部显示
+                        fig_bar.update_layout(
+                            yaxis={'categoryorder': 'total ascending'},
+                            margin=dict(l=20, r=20, t=40, b=20),
+                            height=350
+                        )
+                        st.plotly_chart(fig_bar, use_container_width=True)
 
                     with col_table:
                         st.dataframe(freq_df, use_container_width=True)
