@@ -19,7 +19,7 @@ def run():
     warnings.filterwarnings('ignore')
 
     # 设置中文字体，优先尝试系统中已有的中文字体
-    matplotlib.rcParams['font.sans-serif'] = ['SimHei', 'Microsoft YaHei', 'WenQuanYi Micro Hei', 'DejaVu Sans']
+    matplotlib.rcParams['font.sans-serif'] = ['WenQuanYi Zen Hei', 'SimHei', 'Microsoft YaHei', 'DejaVu Sans']
     matplotlib.rcParams['axes.unicode_minus'] = False
 
     # 设置页面配置

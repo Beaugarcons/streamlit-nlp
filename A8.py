@@ -18,14 +18,17 @@ def run():
     @st.cache_resource
     def load_nmt():
         try:
+            # 修改 task 为更具体的 'translation_en_to_zh'
+            # 或者如果你只是做翻译，可以使用 'text2text-generation'
             translator = pipeline(
-                task="translation",
+                task="translation_en_to_zh", 
                 model="Helsinki-NLP/opus-mt-en-zh"
             )
             return translator
         except Exception as e:
             st.error(f"模型加载失败: {e}")
             return None
+        
 
     translator = load_nmt()
 
