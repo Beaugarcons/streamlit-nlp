@@ -16,5 +16,6 @@ transformers>=4.40.0
 deep-translator
 plotly
 pyvis
+sentencepiece
 spacy==3.7.2   # 最好也固定一下 spacy 的版本以匹配下方的模型
 https://github.com/explosion/spacy-models/releases/download/en_core_web_sm-3.7.1/en_core_web_sm-3.7.1.tar.gz
