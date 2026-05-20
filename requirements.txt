@@ -11,6 +11,7 @@ nltk
 gensim
 adjustText
 torch
+torchvision
 transformers
 deep-translator
 plotly
